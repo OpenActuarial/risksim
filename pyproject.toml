@@ -1,17 +1,27 @@
-[build-system]
-requires = ["setuptools>=61", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "risksim"
 version = "0.1.0"
-description = "Monte Carlo portfolio and treaty simulation for actuarial risk"
+description = "Portfolio-level loss simulation and aggregate treaty modeling in Python"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["numpy"]
+keywords = ["actuarial", "insurance", "simulation", "risk", "reinsurance"]
+authors = [
+  { name = "Michael Bryant" }
+]
+license = { text = "MIT" }
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Financial and Insurance Industry",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Topic :: Scientific/Engineering :: Mathematics",
+  "Topic :: Office/Business :: Financial :: Insurance",
+]
 
-[tool.setuptools]
-package-dir = {"" = "src"}
-
-[tool.setuptools.packages.find]
-where = ["src"]
+[project.urls]
+Homepage = "https://github.com/michaelabryant/risksim"
+Repository = "https://github.com/michaelabryant/risksim"
+Issues = "https://github.com/michaelabryant/risksim/issues"
