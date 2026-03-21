@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from risksim.contracts import AggregateLayer
+from risksim.contracts import AggregateLayer, ContractProgram
 from risksim.portfolio import Portfolio, PortfolioItem
 
 
@@ -113,8 +113,6 @@ def test_portfolio_mean_and_variance_under_independence() -> None:
         ]
     )
 
-    # mean = 1*10 + 2*5 = 20
-    # variance = 1^2*4 + 2^2*9 = 40
     assert portfolio.mean() == pytest.approx(20.0)
     assert portfolio.variance() == pytest.approx(40.0)
     assert portfolio.std() == pytest.approx(np.sqrt(40.0))
@@ -135,7 +133,7 @@ def test_portfolio_simulate_without_contract() -> None:
     assert result.component_names == ["a", "b"]
 
 
-def test_portfolio_simulate_with_contract() -> None:
+def test_portfolio_simulate_with_single_layer() -> None:
     portfolio = Portfolio([PortfolioItem("gross", ConstantModel(200.0))])
     contract = AggregateLayer(
         attachment=100.0,
@@ -155,6 +153,36 @@ def test_portfolio_simulate_with_contract() -> None:
     assert result.ceded_mean() == pytest.approx(50.0)
     assert result.retained_mean() == pytest.approx(150.0)
     assert result.contract_name == "agg_xol"
+
+
+def test_portfolio_simulate_with_contract_program() -> None:
+    portfolio = Portfolio([PortfolioItem("gross", ConstantModel(350.0))])
+    contract = ContractProgram(
+        [
+            AggregateLayer(attachment=100.0, limit=100.0, name="l1"),
+            AggregateLayer(attachment=200.0, limit=100.0, name="l2"),
+        ],
+        name="tower",
+    )
+
+    result = portfolio.simulate(size=3, contract=contract)
+
+    np.testing.assert_allclose(result.gross_losses, np.array([350.0, 350.0, 350.0]))
+    np.testing.assert_allclose(result.ceded_losses, np.array([200.0, 200.0, 200.0]))
+    np.testing.assert_allclose(result.retained_losses, np.array([150.0, 150.0, 150.0]))
+    np.testing.assert_allclose(
+        result.layer_losses,
+        np.array(
+            [
+                [100.0, 100.0],
+                [100.0, 100.0],
+                [100.0, 100.0],
+            ]
+        ),
+    )
+    assert result.layer_names == ["l1", "l2"]
+    assert result.layer_means() == {"l1": 100.0, "l2": 100.0}
+    assert result.contract_name == "tower"
 
 
 def test_portfolio_rejects_empty_items() -> None:

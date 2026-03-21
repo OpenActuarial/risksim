@@ -1,9 +1,10 @@
-from .contracts import AggregateLayer
+from .contracts import AggregateLayer, ContractProgram
 from .portfolio import Portfolio, PortfolioItem
 from .results import SimulationResult
 
 __all__ = [
     "AggregateLayer",
+    "ContractProgram",
     "Portfolio",
     "PortfolioItem",
     "SimulationResult",

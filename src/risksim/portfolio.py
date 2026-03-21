@@ -5,7 +5,7 @@ from typing import Sequence
 
 import numpy as np
 
-from .contracts import AggregateLayer, apply_contract
+from .contracts import AggregateLayer, ContractProgram, apply_contract
 from .protocols import SupportsSample
 from .results import SimulationResult
 
@@ -111,7 +111,7 @@ class Portfolio:
     def simulate(
         self,
         size: int = 100_000,
-        contract: AggregateLayer | None = None,
+        contract: AggregateLayer | ContractProgram | None = None,
     ) -> SimulationResult:
         component_losses = self.sample_components(size=size)
         gross_losses = np.sum(component_losses, axis=1)
@@ -124,6 +124,18 @@ class Portfolio:
             )
 
         ceded_losses, retained_losses = apply_contract(gross_losses, contract)
+
+        if isinstance(contract, ContractProgram):
+            return SimulationResult(
+                gross_losses=gross_losses,
+                ceded_losses=ceded_losses,
+                retained_losses=retained_losses,
+                component_losses=component_losses,
+                component_names=self.component_names(),
+                layer_losses=contract.ceded_by_layer(gross_losses),
+                layer_names=contract.layer_names(),
+                contract_name=contract.name,
+            )
 
         return SimulationResult(
             gross_losses=gross_losses,

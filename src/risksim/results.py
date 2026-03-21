@@ -36,6 +36,8 @@ class SimulationResult:
     retained_losses: np.ndarray | None = None
     component_losses: np.ndarray | None = None
     component_names: Sequence[str] | None = None
+    layer_losses: np.ndarray | None = None
+    layer_names: Sequence[str] | None = None
     contract_name: str | None = None
 
     def __post_init__(self) -> None:
@@ -62,6 +64,19 @@ class SimulationResult:
                 if len(self.component_names) != self.component_losses.shape[1]:
                     raise ValueError(
                         "component_names length must match number of component columns"
+                    )
+
+        if self.layer_losses is not None:
+            self.layer_losses = np.asarray(self.layer_losses, dtype=float)
+            if self.layer_losses.ndim != 2:
+                raise ValueError("layer_losses must be a 2D array")
+            if self.layer_losses.shape[0] != self.gross_losses.shape[0]:
+                raise ValueError("layer_losses must have one row per simulation")
+
+            if self.layer_names is not None:
+                if len(self.layer_names) != self.layer_losses.shape[1]:
+                    raise ValueError(
+                        "layer_names length must match number of layer columns"
                     )
 
     @property
@@ -118,6 +133,19 @@ class SimulationResult:
 
         return {name: float(value) for name, value in zip(names, means)}
 
+    def layer_means(self) -> dict[str, float]:
+        if self.layer_losses is None:
+            return {}
+
+        means = np.mean(self.layer_losses, axis=0)
+
+        if self.layer_names is None:
+            names = [f"layer_{i}" for i in range(self.layer_losses.shape[1])]
+        else:
+            names = list(self.layer_names)
+
+        return {name: float(value) for name, value in zip(names, means)}
+
     def summary(self, quantiles: tuple[float, ...] = (0.95, 0.99)) -> dict[str, Any]:
         out = metrics.summary(self.losses, quantiles=quantiles)
         out["gross_mean"] = self.gross_mean()
@@ -131,6 +159,10 @@ class SimulationResult:
         component_means = self.component_means()
         if component_means:
             out["component_means"] = component_means
+
+        layer_means = self.layer_means()
+        if layer_means:
+            out["layer_means"] = layer_means
 
         if self.contract_name is not None:
             out["contract_name"] = self.contract_name

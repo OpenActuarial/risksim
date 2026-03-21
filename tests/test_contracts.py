@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from risksim.contracts import AggregateLayer, apply_contract
+from risksim.contracts import AggregateLayer, ContractProgram, apply_contract
 
 
 def test_aggregate_layer_ceded_and_retained_with_limit() -> None:
@@ -42,7 +42,49 @@ def test_attachment_and_exhaustion_probabilities() -> None:
     assert layer.exhaustion_probability(losses) == pytest.approx(0.5)
 
 
-def test_apply_contract_returns_ceded_and_retained() -> None:
+def test_contract_program_ceded_by_layer_total_and_retained() -> None:
+    losses = np.array([50.0, 150.0, 250.0, 350.0])
+
+    layer_1 = AggregateLayer(attachment=100.0, limit=100.0, name="l1")
+    layer_2 = AggregateLayer(attachment=200.0, limit=100.0, name="l2")
+    program = ContractProgram([layer_1, layer_2], name="tower")
+
+    by_layer = program.ceded_by_layer(losses)
+    total_ceded = program.ceded(losses)
+    retained = program.retained(losses)
+
+    np.testing.assert_allclose(
+        by_layer,
+        np.array(
+            [
+                [0.0, 0.0],
+                [50.0, 0.0],
+                [100.0, 50.0],
+                [100.0, 100.0],
+            ]
+        ),
+    )
+    np.testing.assert_allclose(total_ceded, np.array([0.0, 50.0, 150.0, 200.0]))
+    np.testing.assert_allclose(retained, np.array([50.0, 100.0, 100.0, 150.0]))
+    assert program.layer_names() == ["l1", "l2"]
+
+
+def test_apply_contract_accepts_contract_program() -> None:
+    losses = np.array([50.0, 150.0, 250.0, 350.0])
+    program = ContractProgram(
+        [
+            AggregateLayer(attachment=100.0, limit=100.0, name="l1"),
+            AggregateLayer(attachment=200.0, limit=100.0, name="l2"),
+        ]
+    )
+
+    ceded, retained = apply_contract(losses, program)
+
+    np.testing.assert_allclose(ceded, np.array([0.0, 50.0, 150.0, 200.0]))
+    np.testing.assert_allclose(retained, np.array([50.0, 100.0, 100.0, 150.0]))
+
+
+def test_apply_contract_returns_ceded_and_retained_for_single_layer() -> None:
     losses = np.array([50.0, 100.0, 150.0, 300.0])
     layer = AggregateLayer(attachment=100.0, limit=50.0, share=1.0)
 
@@ -64,3 +106,8 @@ def test_apply_contract_returns_ceded_and_retained() -> None:
 def test_aggregate_layer_validation(kwargs: dict, message: str) -> None:
     with pytest.raises(ValueError, match=message):
         AggregateLayer(**kwargs)
+
+
+def test_contract_program_requires_at_least_one_layer() -> None:
+    with pytest.raises(ValueError, match="at least one AggregateLayer"):
+        ContractProgram([])
