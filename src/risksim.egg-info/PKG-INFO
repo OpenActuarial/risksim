@@ -1,9 +1,0 @@
-Metadata-Version: 2.4
-Name: risksim
-Version: 0.1.0
-Summary: Monte Carlo portfolio and treaty simulation for actuarial risk
-Requires-Python: >=3.10
-Description-Content-Type: text/markdown
-License-File: LICENSE
-Requires-Dist: numpy
-Dynamic: license-file
