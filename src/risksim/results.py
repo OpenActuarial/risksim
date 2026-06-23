@@ -6,20 +6,7 @@ from typing import Any, Sequence
 import numpy as np
 
 from . import metrics
-
-
-def _as_1d_float_array(losses: np.ndarray | list[float]) -> np.ndarray:
-    arr = np.asarray(losses, dtype=float)
-
-    if arr.ndim == 0:
-        arr = arr.reshape(1)
-    elif arr.ndim != 1:
-        raise ValueError("losses must be a one-dimensional array-like object")
-
-    if arr.size == 0:
-        raise ValueError("losses must not be empty")
-
-    return arr
+from ._validation import as_1d_float_array
 
 
 @dataclass(slots=True)
@@ -41,15 +28,15 @@ class SimulationResult:
     contract_name: str | None = None
 
     def __post_init__(self) -> None:
-        self.gross_losses = _as_1d_float_array(self.gross_losses)
+        self.gross_losses = as_1d_float_array(self.gross_losses)
 
         if self.ceded_losses is not None:
-            self.ceded_losses = _as_1d_float_array(self.ceded_losses)
+            self.ceded_losses = as_1d_float_array(self.ceded_losses)
             if self.ceded_losses.shape != self.gross_losses.shape:
                 raise ValueError("ceded_losses must match gross_losses shape")
 
         if self.retained_losses is not None:
-            self.retained_losses = _as_1d_float_array(self.retained_losses)
+            self.retained_losses = as_1d_float_array(self.retained_losses)
             if self.retained_losses.shape != self.gross_losses.shape:
                 raise ValueError("retained_losses must match gross_losses shape")
 

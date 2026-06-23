@@ -5,19 +5,7 @@ from typing import Sequence
 
 import numpy as np
 
-
-def _as_1d_float_array(losses: np.ndarray | list[float]) -> np.ndarray:
-    arr = np.asarray(losses, dtype=float)
-
-    if arr.ndim == 0:
-        arr = arr.reshape(1)
-    elif arr.ndim != 1:
-        raise ValueError("losses must be a one-dimensional array-like object")
-
-    if arr.size == 0:
-        raise ValueError("losses must not be empty")
-
-    return arr
+from ._validation import as_1d_float_array
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,7 +36,7 @@ class AggregateLayer:
             raise ValueError("share must be between 0 and 1")
 
     def ceded(self, losses: np.ndarray | list[float]) -> np.ndarray:
-        gross = _as_1d_float_array(losses)
+        gross = as_1d_float_array(losses)
 
         recoverable = np.maximum(gross - self.attachment, 0.0)
 
@@ -58,18 +46,23 @@ class AggregateLayer:
         return self.share * recoverable
 
     def retained(self, losses: np.ndarray | list[float]) -> np.ndarray:
-        gross = _as_1d_float_array(losses)
+        gross = as_1d_float_array(losses)
         return gross - self.ceded(gross)
 
     def attachment_probability(self, losses: np.ndarray | list[float]) -> float:
-        ceded = self.ceded(losses)
-        return float(np.mean(ceded > 0.0))
+        """Probability that a loss reaches the layer, i.e. P(loss > attachment).
+
+        This depends only on the attachment point, not on ``share`` or ``limit``,
+        so it stays correct under degenerate parameters (e.g. ``share=0``).
+        """
+        gross = as_1d_float_array(losses)
+        return float(np.mean(gross > self.attachment))
 
     def exhaustion_probability(self, losses: np.ndarray | list[float]) -> float | None:
         if self.limit is None:
             return None
 
-        gross = _as_1d_float_array(losses)
+        gross = as_1d_float_array(losses)
         return float(np.mean(gross >= self.attachment + self.limit))
 
 
@@ -100,7 +93,7 @@ class ContractProgram:
         return names
 
     def ceded_by_layer(self, losses: np.ndarray | list[float]) -> np.ndarray:
-        gross = _as_1d_float_array(losses)
+        gross = as_1d_float_array(losses)
         cols = [layer.ceded(gross) for layer in self.layers]
         return np.column_stack(cols)
 
@@ -109,7 +102,7 @@ class ContractProgram:
         return np.sum(by_layer, axis=1)
 
     def retained(self, losses: np.ndarray | list[float]) -> np.ndarray:
-        gross = _as_1d_float_array(losses)
+        gross = as_1d_float_array(losses)
         return gross - self.ceded(gross)
 
 
@@ -121,7 +114,7 @@ def apply_contract(
     Return (ceded, retained) arrays for a single aggregate layer
     or a multi-layer contract program.
     """
-    gross = _as_1d_float_array(losses)
+    gross = as_1d_float_array(losses)
     ceded = contract.ceded(gross)
     retained = gross - ceded
     return ceded, retained
