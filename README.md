@@ -23,7 +23,7 @@ pip install risksim
 ### From source
 
 ```bash
-git clone https://github.com/michaelabryant/risksim.git
+git clone https://github.com/actuarialpy/risksim.git
 cd risksim
 pip install -e .
 ```
@@ -36,7 +36,7 @@ pip install -e .
 sample(size: int = 1) -> np.ndarray
 ```
 
-Many of the examples below use [`lossmodels`](https://github.com/michaelabryant/lossmodels), which provides aggregate actuarial loss models that integrate naturally with `risksim`.
+Many of the examples below use [`lossmodels`](https://github.com/actuarialpy/lossmodels), which provides aggregate actuarial loss models that integrate naturally with `risksim`.
 
 If you want to run the `lossmodels` examples locally, install `lossmodels` as well.
 

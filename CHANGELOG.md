@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1
+
+### Fixed (packaging)
+- Added an explicit `[build-system]` table (setuptools) and `[tool.setuptools]`
+  src-layout configuration. The package built previously only via pip's legacy
+  fallback; the build is now explicit and reproducible (e.g. with `python -m build`).
+- Corrected stale repository links in the README (`michaelabryant` -> `actuarialpy`).
+
 ## 0.2.0
 
 ### Fixed
