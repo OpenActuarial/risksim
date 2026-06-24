@@ -13,8 +13,13 @@ def test_apply_contract_exported_at_top_level():
 
 
 def test_version_is_consistent():
-    # __init__ and pyproject were out of sync (0.1.0 vs 0.1.1); now both 0.2.0
-    assert risksim.__version__ == "0.2.0"
+    # __init__ and pyproject must not silently drift. Compare the package's
+    # __version__ to the installed distribution metadata (generated from
+    # pyproject.toml) rather than a hardcoded literal, so this check stays valid
+    # across version bumps.
+    from importlib.metadata import version
+
+    assert risksim.__version__ == version("risksim")
 
 
 @pytest.fixture
