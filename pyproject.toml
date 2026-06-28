@@ -27,9 +27,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/actuarialpy/risksim"
-Repository = "https://github.com/actuarialpy/risksim"
-Issues = "https://github.com/actuarialpy/risksim/issues"
+Homepage = "https://github.com/openactuarial/risksim"
+Repository = "https://github.com/openactuarial/risksim"
+Issues = "https://github.com/openactuarial/risksim/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
