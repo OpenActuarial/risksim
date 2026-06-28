@@ -9,16 +9,16 @@ Portfolio-level loss simulation and aggregate reinsurance modeling.
 
 ## Overview
 
-`risksim` composes one or more stochastic loss models into a portfolio, simulates
+**`risksim`** composes one or more stochastic loss models into a portfolio, simulates
 the portfolio's aggregate loss, applies aggregate reinsurance structures, and
 summarizes the gross, ceded, and retained results. It is intentionally
 model-agnostic: anything that exposes a `.sample(size)` method can be a portfolio
-component, so `risksim` handles *composition, contracts, and simulation summaries*
+component, so **`risksim`** handles *composition, contracts, and simulation summaries*
 while the loss generation lives wherever you like.
 
-It pairs naturally with `lossmodels` — build a collective-risk model (or any
-severity/frequency-based model) there, drop it into a `risksim` portfolio here —
-but it has no hard dependency on it; its only runtime requirement is `numpy`.
+It pairs naturally with **`lossmodels`** — build a collective-risk model (or any
+severity/frequency-based model) there, drop it into a **`risksim`** portfolio here —
+but it has no hard dependency on it; its only runtime requirement is **`numpy`**.
 
 ## Highlights
 
@@ -190,16 +190,16 @@ thin wrapper around a sampler. Components that additionally implement `mean()` /
 `variance()` (`SupportsMoments`) enable the closed-form `Portfolio.mean()` /
 `.std()` / `.variance()` shortcuts.
 
-## The ActuarialPy ecosystem
+## The OpenActuarial ecosystem
 
-`risksim` is the portfolio-and-reinsurance layer of a small family of actuarial
+**`risksim`** is the portfolio-and-reinsurance layer of a small family of actuarial
 packages that interoperate through the `.sample()` / `.mean()` interface:
 
 - **`lossmodels`** — frequency / severity distributions, aggregate (collective-risk)
   loss models, coverage modifications, and model fitting. The natural source of
-  `risksim` portfolio components.
+  **`risksim`** portfolio components.
 - **`extremeloss`** — extreme value theory for tail fitting and tail risk measures.
-  It can analyze a `risksim` simulation directly (e.g. `losses_from_risksim(...)`
+  It can analyze a **`risksim`** simulation directly (e.g. `losses_from_risksim(...)`
   and `tail_summary_from_risksim(...)`).
 - **`actuarialpy`** — deterministic, experience-and-data analysis (summaries,
   triangles, trend, credibility) on tabular data.
