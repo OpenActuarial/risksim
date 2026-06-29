@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "risksim"
-version = "0.2.1"
+version = "0.2.2"
 description = "Portfolio-level loss simulation and aggregate treaty modeling in Python"
 readme = "README.md"
 requires-python = ">=3.10"
