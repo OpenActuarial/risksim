@@ -1,8 +1,5 @@
 # risksim
 
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue)]()
-[![License](https://img.shields.io/badge/license-MIT-green)]()
-
 Portfolio-level loss simulation and aggregate reinsurance modeling.
 
 ---
@@ -189,20 +186,6 @@ component — a `lossmodels` collective-risk model or severity, a custom class, 
 thin wrapper around a sampler. Components that additionally implement `mean()` /
 `variance()` (`SupportsMoments`) enable the closed-form `Portfolio.mean()` /
 `.std()` / `.variance()` shortcuts.
-
-## The OpenActuarial ecosystem
-
-**`risksim`** is the portfolio-and-reinsurance layer of a small family of actuarial
-packages that interoperate through the `.sample()` / `.mean()` interface:
-
-- **`lossmodels`** — frequency / severity distributions, aggregate (collective-risk)
-  loss models, coverage modifications, and model fitting. The natural source of
-  **`risksim`** portfolio components.
-- **`extremeloss`** — extreme value theory for tail fitting and tail risk measures.
-  It can analyze a **`risksim`** simulation directly (e.g. `losses_from_risksim(...)`
-  and `tail_summary_from_risksim(...)`).
-- **`actuarialpy`** — deterministic, experience-and-data analysis (summaries,
-  triangles, trend, credibility) on tabular data.
 
 ## Testing
 

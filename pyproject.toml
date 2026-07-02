@@ -1,39 +1,46 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "risksim"
-version = "0.2.2"
+version = "0.2.3"
 description = "Portfolio-level loss simulation and aggregate treaty modeling in Python"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["numpy"]
+license = "MIT"
+authors = [{ name = "Michael Bryant" }]
 keywords = ["actuarial", "insurance", "simulation", "risk", "reinsurance"]
-authors = [
-  { name = "Michael Bryant" }
-]
-license = { text = "MIT" }
 classifiers = [
-  "Development Status :: 3 - Alpha",
-  "Intended Audience :: Science/Research",
-  "Intended Audience :: Financial and Insurance Industry",
-  "License :: OSI Approved :: MIT License",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10",
-  "Topic :: Scientific/Engineering :: Mathematics",
-  "Topic :: Scientific/Engineering :: Information Analysis",
-  "Topic :: Software Development :: Libraries :: Python Modules",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
 ]
+dependencies = [
+    "numpy>=1.22",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
 
 [project.urls]
-Homepage = "https://github.com/OpenActuarial/risksim/"
-Repository = "https://github.com/OpenActuarial/risksim/"
-Documentation = "https://openactuarial.github.io/docs/risksim/"
-Issues = "https://github.com/OpenActuarial/risksim/issues/"
+Homepage = "https://github.com/OpenActuarial/risksim"
+Documentation = "https://openactuarial.org/risksim.html"
+Repository = "https://github.com/OpenActuarial/risksim"
+Issues = "https://github.com/OpenActuarial/risksim/issues"
 
-[tool.setuptools]
-package-dir = {"" = "src"}
+[tool.hatch.build.targets.wheel]
+packages = ["src/risksim"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
