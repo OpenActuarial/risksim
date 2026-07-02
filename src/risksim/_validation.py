@@ -20,7 +20,11 @@ def as_1d_float_array(losses: np.ndarray | list[float]) -> np.ndarray:
     return arr
 
 
-def validate_q(q: float) -> None:
-    """Validate that a quantile level ``q`` lies strictly in ``(0, 1)``."""
-    if not (0.0 < q < 1.0):
+def validate_q(q) -> None:
+    """Validate that quantile level(s) ``q`` lie strictly in ``(0, 1)``.
+
+    Accepts a scalar or array-like of levels.
+    """
+    q_arr = np.asarray(q, dtype=float)
+    if q_arr.size == 0 or not np.all((q_arr > 0.0) & (q_arr < 1.0)):
         raise ValueError("q must be strictly between 0 and 1")

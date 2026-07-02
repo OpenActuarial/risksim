@@ -20,7 +20,9 @@ def test_metric_methods_use_primary_losses_view() -> None:
     assert result.mean() == pytest.approx(np.mean(gross))
     assert result.variance() == pytest.approx(np.var(gross))
     assert result.std() == pytest.approx(np.std(gross))
-    assert result.var(0.75) == pytest.approx(np.quantile(gross, 0.75))
+    assert result.var(0.75) == pytest.approx(
+            np.quantile(gross, 0.75, method="inverted_cdf")
+        )
 
     threshold = np.quantile(gross, 0.75)
     expected_tvar = np.mean(gross[gross >= threshold])

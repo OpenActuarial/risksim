@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.0
+
+### Changed
+- **Breaking (numeric):** `var` and `tvar` follow the ecosystem-wide
+  convention: VaR is the inverted-CDF order statistic x_(ceil(nq)) and TVaR
+  the Acerbi-Tasche average-quantile estimator, so TVaR(q) >= VaR(q) always,
+  including at exact integer nq boundaries. Conformance is pinned by a test
+  shared byte-for-byte with lossmodels and extremeloss.
+
+### Added
+- `exceedance_probability` alias and vectorized `q` support in the metrics
+  module.
+
+### Fixed
+- Layer/component name mappings in `SimulationResult` now zip strictly,
+  surfacing length mismatches instead of silently truncating.
+
 ## 0.2.1
 
 ### Fixed (packaging)

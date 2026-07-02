@@ -118,7 +118,7 @@ class SimulationResult:
         else:
             names = list(self.component_names)
 
-        return {name: float(value) for name, value in zip(names, means)}
+        return {name: float(value) for name, value in zip(names, means, strict=True)}
 
     def layer_means(self) -> dict[str, float]:
         if self.layer_losses is None:
@@ -131,7 +131,7 @@ class SimulationResult:
         else:
             names = list(self.layer_names)
 
-        return {name: float(value) for name, value in zip(names, means)}
+        return {name: float(value) for name, value in zip(names, means, strict=True)}
 
     def summary(self, quantiles: tuple[float, ...] = (0.95, 0.99)) -> dict[str, Any]:
         out = metrics.summary(self.losses, quantiles=quantiles)
