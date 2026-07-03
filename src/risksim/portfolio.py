@@ -15,8 +15,11 @@ def _validate_size(size: int) -> None:
         raise ValueError("size must be positive")
 
 
-def _sample_1d(model: SupportsSample, size: int) -> np.ndarray:
-    samples = np.asarray(model.sample(size=size), dtype=float)
+def _sample_1d(model: SupportsSample, size: int, rng: np.random.Generator | None = None) -> np.ndarray:
+    if rng is None:
+        samples = np.asarray(model.sample(size=size), dtype=float)
+    else:
+        samples = np.asarray(model.sample(size=size, rng=rng), dtype=float)
 
     if samples.ndim == 0:
         samples = samples.reshape(1)
@@ -58,8 +61,8 @@ class PortfolioItem:
         if self.weight < 0:
             raise ValueError("weight must be nonnegative")
 
-    def sample(self, size: int) -> np.ndarray:
-        losses = _sample_1d(self.model, size=size)
+    def sample(self, size: int, rng: np.random.Generator | None = None) -> np.ndarray:
+        losses = _sample_1d(self.model, size=size, rng=rng)
         return self.weight * losses
 
     def mean(self) -> float:
@@ -86,14 +89,15 @@ class Portfolio:
     def component_names(self) -> list[str]:
         return [item.name for item in self.items]
 
-    def sample_components(self, size: int = 1) -> np.ndarray:
+    def sample_components(self, size: int = 1, rng: np.random.Generator | int | None = None) -> np.ndarray:
         _validate_size(size)
 
-        columns = [item.sample(size=size) for item in self.items]
+        gen = None if rng is None else np.random.default_rng(rng)
+        columns = [item.sample(size=size, rng=gen) for item in self.items]
         return np.column_stack(columns)
 
-    def sample(self, size: int = 1) -> np.ndarray:
-        component_losses = self.sample_components(size=size)
+    def sample(self, size: int = 1, rng: np.random.Generator | int | None = None) -> np.ndarray:
+        component_losses = self.sample_components(size=size, rng=rng)
         return np.sum(component_losses, axis=1)
 
     def mean(self) -> float:
@@ -112,8 +116,9 @@ class Portfolio:
         self,
         size: int = 100_000,
         contract: AggregateLayer | ContractProgram | None = None,
+        rng: np.random.Generator | int | None = None,
     ) -> SimulationResult:
-        component_losses = self.sample_components(size=size)
+        component_losses = self.sample_components(size=size, rng=rng)
         gross_losses = np.sum(component_losses, axis=1)
 
         if contract is None:

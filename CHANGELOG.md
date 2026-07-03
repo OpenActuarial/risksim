@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.1
+
+### Added
+
+- `Portfolio.sample`, `Portfolio.sample_components`, `Portfolio.simulate`,
+  and `PortfolioItem.sample` accept the shared `rng` argument; one resolved
+  generator is threaded through the components so composed simulations are
+  bit-reproducible. Models without an `rng` parameter keep working when
+  `rng` is omitted.
+
+### Added
+
+- Conformance, identity, and integration test suites (scipy/closed-form
+  conformance, mathematical identities, cross-package seams). Example
+  scripts are now executed by the test suite.
+
+### Changed
+
+- More descriptive package `description` metadata.
+
 ## 0.3.0
 
 ### Changed
