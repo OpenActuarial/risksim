@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.5.1
+
+Documentation only; no library changes.
+
+### Fixed
+- The `Portfolio` docstring and the README/PyPI overview described the
+  package as independence-only, predating the 0.5.0 `dependence` module.
+  Both now document the default-independent sampler alongside the
+  supported `impose_rank_correlation` workflow; `Portfolio.variance` /
+  `.std` / `.summary` are noted as independence-only closed forms
+  unaffected by downstream reordering; and the README package-structure
+  list now includes `dependence.py` and `uncertainty.py` (the latter
+  stale since 0.4.0). No behavior change -- 0.5.0 code is unaffected.
+
 ## 0.5.0
 
 ### Added
@@ -15,6 +29,7 @@
   `scores="t"` with small `df` when the question is whether components
   blow up together), and this imposes asserted dependence rather than
   estimating it.
+
 
 ## 0.3.1
 

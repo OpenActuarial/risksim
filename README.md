@@ -19,6 +19,11 @@ It pairs naturally with **`lossmodels`** — build a collective-risk model (or a
 severity/frequency-based model) there, drop it into a **`risksim`** portfolio here —
 but it has no hard dependency on it; its only runtime requirement is **`numpy`**.
 
+Components are simulated independently by default; **dependence** between them
+is a one-line post-processing step (`impose_rank_correlation`, Iman–Conover
+reordering that preserves marginals exactly), and every simulated risk
+measure can carry a **Monte Carlo error** estimate (`risksim.uncertainty`).
+
 ## Highlights
 
 - **Portfolios** — combine multiple simulated loss components, each with an
@@ -29,6 +34,14 @@ but it has no hard dependency on it; its only runtime requirement is **`numpy`**
   per-component, and per-layer losses.
 - **Risk measures** — mean, variance / standard deviation, VaR, TVaR, exceedance
   probabilities, and a one-call summary, on any loss vector.
+- **Dependence** — components sample independently by default;
+  `dependence.impose_rank_correlation` imposes a target rank correlation by
+  Iman–Conover reordering (normal or Student-*t* score families), preserving
+  each marginal exactly. Rank correlation is not tail dependence — use
+  *t* scores when the components must blow up together.
+- **Monte Carlo error** — `uncertainty` puts confidence intervals on
+  simulated means (normal theory), VaR (distribution-free order statistics),
+  and TVaR (bootstrap), so you can tell signal from simulation noise.
 - **Model-agnostic** — any object implementing `.sample(size)` works; components
   that also expose `.mean()` unlock closed-form portfolio moments.
 
@@ -56,6 +69,8 @@ risksim/
 ├── contracts.py    # AggregateLayer, ContractProgram, apply_contract
 ├── results.py      # SimulationResult (gross / ceded / retained / component / layer views)
 ├── metrics.py      # mean, variance, std, var, tvar, prob_exceeding, summary
+├── uncertainty.py  # mean_ci, quantile_ci, bootstrap_ci, summary_with_error
+├── dependence.py   # impose_rank_correlation (Iman–Conover)
 └── protocols.py    # SupportsSample, SupportsMoments
 ```
 
@@ -145,6 +160,44 @@ ceded, retained = apply_contract(gross_losses, program)
 the input, where `ceded + retained == losses`. Passing a contract to
 `Portfolio.simulate(..., contract=program)` does the same inside the simulation and
 records the per-layer detail.
+
+## Dependence between components
+
+By default a portfolio's components are simulated independently. Real
+components often move together, and pretending they don't understates the
+portfolio tail — exactly the metrics you simulate for. Add dependence as a
+one-line post-processing step that preserves every component's marginal
+distribution exactly:
+
+```python
+import numpy as np
+from risksim import Portfolio, PortfolioItem, metrics
+from risksim.dependence import impose_rank_correlation
+
+portfolio = Portfolio([...])
+matrix = portfolio.sample_components(200_000, rng=0)     # (n, k), independent
+
+corr = np.array([[1.0, 0.6], [0.6, 1.0]])
+dependent = impose_rank_correlation(matrix, corr, rng=0)  # marginals unchanged
+total = dependent.sum(axis=1)
+
+metrics.tvar(total, 0.99)   # now reflects the dependence
+```
+
+`impose_rank_correlation` uses Iman–Conover reordering. Two things to know,
+both enforced in the docs and tests:
+
+- **Rank correlation is not tail dependence.** Normal scores (the default)
+  reproduce the target rank correlation but leave joint *extremes*
+  asymptotically independent. When the risk question is "do the components
+  blow up *together*", pass `scores="t"` with a small `df` — same rank
+  correlation, genuinely clustered joint tails.
+- It **imposes** the dependence you assert; it does not estimate dependence
+  from data.
+
+The analytic `Portfolio.variance()` / `.std()` / `.summary()` assume
+independence and are unaffected by this reordering; compute dependent risk
+measures from the reordered sample via `metrics`.
 
 ## The simulation result
 

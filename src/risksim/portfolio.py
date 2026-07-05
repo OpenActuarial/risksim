@@ -73,10 +73,29 @@ class PortfolioItem:
 
 
 class Portfolio:
-    """
+    r"""
     Portfolio of aggregate-loss components.
 
-    This first version assumes components are sampled independently.
+    :meth:`sample` and :meth:`sample_components` draw the components
+    **independently** -- the natural default, and the right one when the
+    components genuinely do not move together. Independence is not
+    imposed on the workflow, only on this sampler: to introduce
+    dependence, draw the component matrix here and reorder it with
+    :func:`risksim.dependence.impose_rank_correlation`, which preserves
+    each component's marginal exactly while imposing a target rank
+    correlation (see that function for the rank-vs-tail-dependence
+    caveat)::
+
+        from risksim.dependence import impose_rank_correlation
+
+        matrix = portfolio.sample_components(n, rng)
+        dependent = impose_rank_correlation(matrix, corr, rng)
+        total = dependent.sum(axis=1)
+
+    The analytic :meth:`variance`, :meth:`std`, and :meth:`summary`
+    methods assume independence and are unaffected by that
+    post-processing; compute dependent risk measures from the reordered
+    sample via :mod:`risksim.metrics`.
     """
 
     def __init__(self, items: Sequence[PortfolioItem], name: str = "portfolio") -> None:
@@ -90,6 +109,13 @@ class Portfolio:
         return [item.name for item in self.items]
 
     def sample_components(self, size: int = 1, rng: np.random.Generator | int | None = None) -> np.ndarray:
+        """Draw a ``(size, n_components)`` matrix, one column per component.
+
+        Components are drawn independently. This matrix is exactly the
+        input :func:`risksim.dependence.impose_rank_correlation` expects,
+        so imposing dependence is a one-line post-processing step on the
+        return value (see the class docstring).
+        """
         _validate_size(size)
 
         gen = None if rng is None else np.random.default_rng(rng)
@@ -104,8 +130,12 @@ class Portfolio:
         return float(sum(item.mean() for item in self.items))
 
     def variance(self) -> float:
-        """
-        Analytic variance under the independence assumption.
+        """Analytic portfolio variance under the independence assumption.
+
+        This is the closed-form sum of component variances and does **not**
+        reflect any dependence imposed downstream via
+        :func:`risksim.dependence.impose_rank_correlation`; for a
+        dependent portfolio, take the variance of the reordered sample.
         """
         return float(sum(item.variance() for item in self.items))
 
