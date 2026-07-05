@@ -31,7 +31,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7"]
+dev = ["pytest>=7", "lossmodels>=0.7.0"]
 
 [project.urls]
 Homepage = "https://github.com/OpenActuarial/risksim"
