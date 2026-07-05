@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.4.0
+
+### Added
+- **`risksim.uncertainty`: Monte Carlo error quantification.** A simulated
+  VaR without an error estimate is a random number with confidence; this
+  module answers "how much of this is signal" for a loss vector of any
+  origin. `mean_ci` (normal theory), `quantile_ci` (distribution-free
+  order-statistic interval on the same `ceil(n*q)` rank convention as
+  `metrics.var`; `se` is deliberately `nan` because a quantile has no
+  distribution-free standard error -- the interval is the uncertainty
+  statement), `bootstrap_ci` (percentile bootstrap for anything, TVaR in
+  particular, reproducible via `rng`), and `summary_with_error`, whose
+  point estimates match `metrics.summary` exactly with each metric
+  carrying the interval its sampling theory supports.
+
 ## 0.3.1
 
 ### Added
