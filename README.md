@@ -1,5 +1,7 @@
 # risksim
 
+[![CI](https://github.com/OpenActuarial/risksim/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenActuarial/risksim/actions/workflows/ci.yml) [![PyPI](https://img.shields.io/pypi/v/risksim)](https://pypi.org/project/risksim/)
+
 Portfolio-level loss simulation and aggregate reinsurance modeling.
 
 ---
