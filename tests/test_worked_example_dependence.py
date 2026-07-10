@@ -15,12 +15,12 @@ from risksim.dependence import impose_rank_correlation
 
 @pytest.fixture(scope="module")
 def worlds():
-    medical = lm.CollectiveRiskModel(lm.NegativeBinomial(65.3, 0.269),
+    prop = lm.CollectiveRiskModel(lm.NegativeBinomial(65.3, 0.269),
                                      lm.Lognormal(9.2, 0.95))
-    specialty = lm.CollectiveRiskModel(lm.Poisson(26.0),
+    liab = lm.CollectiveRiskModel(lm.Poisson(26.0),
                                        lm.Lognormal(10.2, 1.35))
-    port = rs.Portfolio([rs.PortfolioItem("medical", medical),
-                         rs.PortfolioItem("specialty", specialty)])
+    port = rs.Portfolio([rs.PortfolioItem("property", prop),
+                         rs.PortfolioItem("liability", liab)])
     res = port.simulate(200_000, rng=7)
     M = res.component_losses
     corr = np.array([[1.0, 0.5], [0.5, 1.0]])
