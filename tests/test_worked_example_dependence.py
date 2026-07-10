@@ -4,10 +4,10 @@ Pins docs page ``worked-example-dependence.md`` (Example 9) in the
 OpenActuarial docs repo. Drop into ``risksim/tests/``. Requires
 ``lossmodels`` (already a test dependency for the integration suite).
 """
+import lossmodels as lm
 import numpy as np
 import pytest
 
-import lossmodels as lm
 import risksim as rs
 from risksim import metrics, uncertainty
 from risksim.dependence import impose_rank_correlation
