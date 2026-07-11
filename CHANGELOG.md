@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.3
+
+Bump version number to update PyPI with updated README.
+
 ## 0.5.2
 
 Documentation only; no behavior changes.
