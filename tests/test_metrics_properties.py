@@ -1,4 +1,6 @@
 """Risk-measure properties: coherence-style identities and exact hand cases."""
+from itertools import pairwise
+
 import numpy as np
 import pytest
 
@@ -31,9 +33,9 @@ def test_tvar_dominates_var_and_is_monotone_in_q():
     losses = np.random.default_rng(5).pareto(2.5, size=4000) * 1000.0
     qs = [0.5, 0.8, 0.9, 0.99]
     tvars = [metrics.tvar(losses, q) for q in qs]
-    for q, t in zip(qs, tvars):
+    for q, t in zip(qs, tvars, strict=True):
         assert t >= metrics.var(losses, q)
-    assert all(b >= a for a, b in zip(tvars, tvars[1:]))
+    assert all(b >= a for a, b in pairwise(tvars))
 
 
 def test_summary_statistics_match_numpy():

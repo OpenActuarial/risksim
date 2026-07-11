@@ -11,7 +11,8 @@ __all__ = [
     "SimulationResult",
 ]
 
-from importlib.metadata import PackageNotFoundError as _PackageNotFoundError, version as _version
+from importlib.metadata import PackageNotFoundError as _PackageNotFoundError
+from importlib.metadata import version as _version
 
 try:
     __version__ = _version("risksim")

@@ -15,8 +15,9 @@ lower-quantile order statistic for VaR), so the point values in
 """
 from __future__ import annotations
 
+from collections.abc import Callable
 from statistics import NormalDist
-from typing import Any, Callable
+from typing import Any
 
 import numpy as np
 

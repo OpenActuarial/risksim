@@ -1,11 +1,9 @@
 import numpy as np
-
 from lossmodels.aggregate import CollectiveRiskModel
 from lossmodels.frequency import Poisson
 from lossmodels.severity import Lognormal
 
 from risksim import AggregateLayer, Portfolio, PortfolioItem
-
 
 np.random.seed(54321)
 
