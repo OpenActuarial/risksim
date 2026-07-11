@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.2
+
+Documentation only; no behavior changes.
+
+### Fixed
+- `metrics.mean`, `metrics.variance`, `metrics.std`, `metrics.prob_exceeding`,
+  and `metrics.summary` had no docstrings and were silently omitted from the
+  autodoc API reference (only `var` and `tvar` appeared). All five are now
+  documented in the module's style, and `metrics` gained an explicit
+  `__all__` covering the eight public names including the
+  `exceedance_probability` alias.
+
 ## 0.5.1
 
 Documentation only; no library changes.

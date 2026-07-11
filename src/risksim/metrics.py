@@ -6,18 +6,40 @@ import numpy as np
 
 from ._validation import as_1d_float_array, validate_q
 
+__all__ = [
+    "mean",
+    "variance",
+    "std",
+    "var",
+    "tvar",
+    "prob_exceeding",
+    "exceedance_probability",
+    "summary",
+]
+
 
 def mean(losses: np.ndarray | list[float]) -> float:
+    """Empirical mean of a simulated loss vector."""
     arr = as_1d_float_array(losses)
     return float(np.mean(arr))
 
 
 def variance(losses: np.ndarray | list[float], ddof: int = 0) -> float:
+    """Empirical variance of a simulated loss vector.
+
+    ``ddof`` follows numpy's convention: ``0`` (default) is the population
+    estimator dividing by ``n``; ``1`` divides by ``n - 1``.
+    """
     arr = as_1d_float_array(losses)
     return float(np.var(arr, ddof=ddof))
 
 
 def std(losses: np.ndarray | list[float], ddof: int = 0) -> float:
+    """Empirical standard deviation of a simulated loss vector.
+
+    ``ddof`` follows numpy's convention: ``0`` (default) is the population
+    estimator dividing by ``n``; ``1`` divides by ``n - 1``.
+    """
     arr = as_1d_float_array(losses)
     return float(np.std(arr, ddof=ddof))
 
@@ -89,6 +111,12 @@ def tvar(losses: np.ndarray | list[float], q: float | np.ndarray) -> float | np.
 
 
 def prob_exceeding(losses: np.ndarray | list[float], threshold: float) -> float:
+    """Empirical exceedance probability ``P(X > threshold)``.
+
+    The inequality is strict, matching the survival-function convention
+    used across the ecosystem. Also available under the ecosystem-standard
+    spelling ``exceedance_probability``.
+    """
     arr = as_1d_float_array(losses)
     return float(np.mean(arr > threshold))
 
@@ -111,6 +139,14 @@ def summary(
     losses: np.ndarray | list[float],
     quantiles: tuple[float, ...] = (0.95, 0.99),
 ) -> dict[str, Any]:
+    """One-call risk summary of a simulated loss vector.
+
+    Returns a dict with ``n_sims``, ``mean``, ``std``, ``min``, ``max``,
+    and a ``var_{p}`` / ``tvar_{p}`` pair per requested quantile, where
+    ``{p}`` is the percentile label (``0.99 -> "99"``, ``0.995 -> "99.5"``).
+    VaR and TVaR use the ecosystem-wide empirical estimators — see
+    :func:`var` and :func:`tvar`.
+    """
     arr = as_1d_float_array(losses)
 
     out: dict[str, Any] = {
