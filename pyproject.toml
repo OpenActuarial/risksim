@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "risksim"
-version = "0.5.4"
+version = "0.5.5"
 description = "Portfolio Monte Carlo simulation and risk measures: aggregate outcomes across contracts, reinsurance layers and programs, and VaR/TVaR on the simulated distribution."
 readme = "README.md"
 requires-python = ">=3.10"
