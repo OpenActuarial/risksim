@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.4
+
+Metadata-only release.
+
+- Standardize the numpy floor: `numpy>=1.23`.
+- Declare Python 3.14 support in the classifiers.
+- No code changes.
+
 ## 0.5.3
 
 Bump version number to update PyPI with updated README.

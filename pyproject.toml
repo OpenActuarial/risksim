@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "risksim"
-version = "0.5.3"
+version = "0.5.4"
 description = "Portfolio Monte Carlo simulation and risk measures: aggregate outcomes across contracts, reinsurance layers and programs, and VaR/TVaR on the simulated distribution."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -23,15 +23,16 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 dependencies = [
-    "numpy>=1.22",
+    "numpy>=1.23",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7", "lossmodels>=0.7.0"]
+dev = ["pytest>=7", "lossmodels>=0.8"]
 
 [project.urls]
 Homepage = "https://github.com/OpenActuarial/risksim"
