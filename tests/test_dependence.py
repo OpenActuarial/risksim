@@ -79,7 +79,7 @@ def test_guards(components):
         impose_rank_correlation(components, good)
     bad = np.array([[1.0, 0.99, -0.99], [0.99, 1.0, 0.99],
                     [-0.99, 0.99, 1.0]])
-    with pytest.raises(ValueError, match="not positive definite"):
+    with pytest.raises(ValueError, match="not positive semidefinite"):
         impose_rank_correlation(components, bad)
     diag = np.array([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
     with pytest.raises(ValueError, match="unit diagonal"):

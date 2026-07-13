@@ -34,6 +34,27 @@ import numpy as np
 __all__ = ["impose_rank_correlation"]
 
 
+def _psd_factor(corr: np.ndarray, tol: float = 1e-8) -> np.ndarray:
+    """A square-root factor ``F`` with ``F @ F.T == corr`` for a PSD ``corr``.
+
+    Uses the symmetric eigendecomposition rather than Cholesky, so it accepts a
+    *singular* (rank-deficient) correlation matrix -- e.g. two perfectly
+    correlated components -- which is a valid positive-semidefinite correlation
+    matrix that Cholesky rejects. Tiny negative eigenvalues from rounding are
+    clamped to zero; a genuinely negative eigenvalue (an indefinite matrix)
+    raises. Any factor with ``F @ F.T == corr`` imposes the target correlation on
+    decorrelated scores, so a non-triangular root works for Iman-Conover.
+    """
+    w, vecs = np.linalg.eigh(corr)
+    scale = max(1.0, float(w.max()))
+    if float(w.min()) < -tol * scale:
+        raise ValueError(
+            "target_corr is not positive semidefinite (it has a negative "
+            "eigenvalue); it is not a valid correlation matrix"
+        )
+    return vecs @ np.diag(np.sqrt(np.clip(w, 0.0, None)))
+
+
 def impose_rank_correlation(
     samples: np.ndarray,
     target_corr: np.ndarray,
@@ -87,10 +108,11 @@ def impose_rank_correlation(
     try:
         chol_target = np.linalg.cholesky(corr)
     except np.linalg.LinAlgError:
-        raise ValueError(
-            "target_corr is not positive definite; it is not a valid "
-            "correlation matrix"
-        ) from None
+        # Cholesky needs positive *definiteness*; a valid but singular PSD
+        # correlation matrix (e.g. two perfectly correlated components) lands
+        # here. Fall back to the eigen square root, which accepts PSD and only
+        # rejects a genuinely indefinite matrix.
+        chol_target = _psd_factor(corr)
     if scores not in ("normal", "t"):
         raise ValueError('scores must be "normal" or "t"')
     if scores == "t" and df <= 2.0:
